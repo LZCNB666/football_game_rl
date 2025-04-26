@@ -1,4 +1,4 @@
-### A python Football Game Based Reinforcement Learning
+### Python Football Game Based on Reinforcement Learning
 ___
 #### Project Structure
 ```text
