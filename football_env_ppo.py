@@ -18,6 +18,7 @@ KICK_FORCE = 5
 PLAYER_SPEED = 5
 ENEMY_SPEED = 3
 
+
 class Player:
     def __init__(self, x, y, is_enemy=False):
         self.rect = pygame.Rect(x, y, PLAYER_WIDTH, PLAYER_HEIGHT)
