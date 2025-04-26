@@ -18,6 +18,25 @@ football_game
 ```
 
 #### Environment Settings
+1. Python >= 3.9 is required
+```bash
+conda create -n football python=3.9.13
+```
+```bash
+conda activate football
+```
+2. Install required packages
+```bash
+pip install numpy matplotlib pygame gymnasium
+```
+3. PyTorch >= 2.3 is required
+```bash
+pip install torch==2.5.0 torchvision==2.5.0
+```
+4. Install stable-baselines3
+```bash
+pip install stable-baselines3[extra]
+```
 
 #### Training
 

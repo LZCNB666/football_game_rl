@@ -18,6 +18,25 @@ football_game
 ```
 
 #### 环境配置
+1. Python版本需要 >= 3.9
+```bash
+conda create -n football python=3.9.13
+```
+```bash
+conda activate football
+```
+2. 安装必要的依赖包
+```bash
+pip install numpy matplotlib pygame gymnasium
+```
+3. PyTorch版本需要 >= 2.3
+```bash
+pip install torch==2.5.0 torchvision==2.5.0
+```
+4. 安装stable-baselines3
+```bash
+pip install stable-baselines3[extra]
+```
 
 #### 训练
 
