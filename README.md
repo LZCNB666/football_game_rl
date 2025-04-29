@@ -1,4 +1,7 @@
 ### Python Football Game Based on Reinforcement Learning
+
+<div style="text-align: center;"><img src="./imgs/game.png" style="zoom: 50%;" /></div>
+
 ___
 #### Project Structure
 ```text
@@ -54,10 +57,24 @@ pip install stable-baselines3[extra]
 ___
 
 #### Training
+
 1. Train PPO with 12d observation space
+```bash
+python path/to/train_ppo.py
+```
+- Training logs will be saved at `./football_game/ppo_football_logs/`, you can use tensorboard to do visualization.
+```bash
+tensorboard --logdir ppo_football_logs/tensorboard
+```
 
 2. Train PPO with 8d observation space
-
+```bash
+python path/to/train_ppo_8d.py
+```
+- Training logs will be saved at `./football_game/ppo_football_logs2/`, you can use tensorboard to do visualization.
+```bash
+tensorboard --logdir ppo_football_logs2/tensorboard
+```
 ___
 #### Run the Game
 > Please run ***Train ppo with 12d observation space*** in **Training** section before running game: `game_ppo.py` and `game_hybrid.py`! 
@@ -66,6 +83,9 @@ Take `game_ppo.py` as example:
 ```bash
 python path/to/game_ppo.py
 ```
+
+<div style="text-align: center;"><img src="./imgs/12dvs8d.png" style="zoom: 75%;" /></div>
+
 ___
 
 #### Test the Game
