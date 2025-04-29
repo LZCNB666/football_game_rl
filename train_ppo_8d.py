@@ -46,4 +46,4 @@ model.save(os.path.join(log_dir, "ppo_football_final"))
 
 print("Training complete. Best model saved at: ", os.path.join(log_dir, "ppo_football_final.zip"))
 
-# tensorboard --logdir ppo_football_logs/tensorboard
+# tensorboard --logdir ppo_football_logs2/tensorboard
