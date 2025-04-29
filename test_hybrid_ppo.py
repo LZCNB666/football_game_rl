@@ -5,14 +5,14 @@ import math
 import numpy as np
 from stable_baselines3 import PPO
 
-# 加载 PPO 模型
+# load PPO models
 model1 = PPO.load("./ppo_football_logs/best_model.zip")
 model2 = PPO.load("./ppo_football_logs/best_model.zip")
 
-# 初始化pygame
+# initialize pygame
 pygame.init()
 
-# 游戏常量
+# game constants
 WIDTH, HEIGHT = 800, 600
 PLAYER_WIDTH, PLAYER_HEIGHT = 30, 50
 ENEMY_WIDTH, ENEMY_HEIGHT = 30, 50
@@ -26,7 +26,7 @@ PLAYER_SPEED = 5
 ENEMY_SPEED = 5
 TARGET_MATCH_COUNT = 10
 
-# 颜色
+# colors
 GREEN = (0, 128, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -35,12 +35,12 @@ BLACK = (0, 0, 0)
 
 USE_PPO_DISTANCE = 150
 
-# 创建游戏窗口
+# create screen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Football Game Auto Play")
 clock = pygame.time.Clock()
 
-# 游戏对象
+# game objects
 class Player:
     def __init__(self, x, y, color, speed):
         self.rect = pygame.Rect(x, y, PLAYER_WIDTH, PLAYER_HEIGHT)
@@ -84,8 +84,8 @@ class Player:
                 ball.vx = (ball.vx / speed) * MAX_BALL_SPEED
                 ball.vy = (ball.vy / speed) * MAX_BALL_SPEED
 
-            return True  # 踢到球了
-        return False  # 没踢到球
+            return True
+        return False
 
 class Ball:
     def __init__(self):
@@ -191,12 +191,12 @@ class HybridEnemy:
             ], dtype=np.float32)
 
     def update(self, ball, enemy):
-        # 计算敌人与球的距离
+        # calculate distance between ball and enemy
         dx = ball.x - enemy.rect.centerx
         dy = ball.y - enemy.rect.centery
         distance = math.sqrt(dx * dx + dy * dy)
 
-        # 距离大于一定值，使用rule-based策略
+        # Use rule-based strategy if distance >= USE_PPO_DISTANCE
         if distance >= 150:
             dx = (ball.x - self.player.rect.centerx)
             dy = (ball.y - self.player.rect.centery)
@@ -226,7 +226,7 @@ class HybridEnemy:
             self.player.move(dx, dy)
 
 
-# 创建对象
+# create game objects
 player = Player(WIDTH // 4, HEIGHT // 2, BLUE, PLAYER_SPEED)
 enemy = Player(3 * WIDTH // 4, HEIGHT // 2, RED, ENEMY_SPEED)
 ball = Ball()
@@ -234,12 +234,12 @@ ball = Ball()
 ppo_agent = PPOAgent(player)
 hybrid_enemy = HybridEnemy(enemy)
 
-# 分数记录
+# score related variables
 player_score = 0
 enemy_score = 0
 matches_played = 0
 
-# 统计数据
+# statistics related variables
 ppo_hold_time = 0
 hybrid_hold_time = 0
 ppo_attack_count = 0
@@ -247,31 +247,31 @@ hybrid_attack_count = 0
 ppo_defense_count = 0
 hybrid_defense_count = 0
 
-# 持球归属
+# who holds th ball
 ball_holder = None  # "ppo" / "hybrid"
 
 font = pygame.font.Font(None, 36)
 
-# 自动对战循环
+# automatic play
 running = True
 while running and matches_played < TARGET_MATCH_COUNT:
     clock.tick(60)
 
-    # 更新
+    # update game objects
     ball.update()
-    ppo_agent.update(ball, enemy)
-    hybrid_enemy.update(ball, player)
+    ppo_agent.update(ball, player)
+    hybrid_enemy.update(ball, enemy)
 
-    # 踢球检测
+    # kicking detection
     player_kicked = player.kick(ball)
     enemy_kicked = enemy.kick(ball)
 
-    # 判断当前持球方
+    # identify who holds the ball
     if player_kicked:
         ball_holder = "ppo"
-        if abs(ball.x - WIDTH // 2) < 100:  # 距离中线 < 100px时击球，算作进攻行为
+        if abs(ball.x - WIDTH // 2) < 100:  # kicking when distance to center line < 100px, considered as attacking behavior
             ppo_attack_count += 1
-        if ball.x < WIDTH - 100:  # 距离己方球门 < 100px时击球，算作防守行为
+        if ball.x < WIDTH - 100:  # kicking when distance to own goal < 100px, considered as defending behavior
             ppo_defense_count += 1
     elif enemy_kicked:
         ball_holder = "hybrid"
@@ -280,13 +280,13 @@ while running and matches_played < TARGET_MATCH_COUNT:
         if ball.x > WIDTH - 100:
             hybrid_defense_count += 1
 
-    # 持球时间累计
+    # calculate ball hold time
     if ball_holder == "ppo":
         ppo_hold_time += 1
     elif ball_holder == "hybrid":
         hybrid_hold_time += 1
 
-    # 检查进球
+    # check goal
     goal = ball.check_goals()
     if goal:
         if goal == "player":
@@ -299,7 +299,7 @@ while running and matches_played < TARGET_MATCH_COUNT:
         enemy.rect.center = (3 * WIDTH // 4, HEIGHT // 2)
         ball_holder = None
 
-    # 绘制
+    # draw game scene
     screen.fill(GREEN)
     pygame.draw.line(screen, WHITE, (WIDTH // 2, 0), (WIDTH // 2, HEIGHT), 2)
     pygame.draw.rect(screen, WHITE, (0, HEIGHT // 2 - GOAL_HEIGHT // 2, GOAL_WIDTH, GOAL_HEIGHT))
@@ -319,7 +319,7 @@ while running and matches_played < TARGET_MATCH_COUNT:
 
     pygame.display.flip()
 
-# 打印最终结果
+# print final result
 print("========== Battle Result ==========")
 print(f"PPO Agent Wins: {player_score}")
 print(f"Hybrid Enemy Wins: {enemy_score}")
