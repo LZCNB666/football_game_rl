@@ -5,9 +5,13 @@ ___
 football_game
 |
 ├── football_env_ppo.py:  
-|   training environment for PPO with gymnasium style
+|   training environment for PPO with gymnasium style with 12d observation space
+├── football_env_ppo_8d.py:  
+|   training environment for PPO with gymnasium style with 8d observation space
 ├── train_ppo.py: 
-|   train PPO using stable-baselines3 
+|   train PPO with 12d observation space using stable-baselines3 
+├── train_ppo_8d.py: 
+|   train PPO with 8d observation space using stable-baselines3 
 |
 ├── game_rule_based.py: 
 |   AI is rule-based

@@ -5,9 +5,13 @@ ___
 football_game
 |
 ├── football_env_ppo.py:  
-|   用于训练PPO的足球游戏环境，使用gymnasium风格
+|   用于训练PPO的足球游戏环境，使用gymnasium风格，12维观测空间
+├── football_env_ppo_8d.py:  
+|   用于训练PPO的足球游戏环境，使用gymnasium风格，8维观测空间
 ├── train_ppo.py: 
-|   使用stable-baselines3训练PPO
+|   使用stable-baselines3训练12维观测空间的PPO
+├── train_ppo_8d.py: 
+|   使用stable-baselines3训练8维观测空间的PPO
 |
 ├── game_rule_based.py: 
 |   AI的策略只基于规则
@@ -15,6 +19,7 @@ football_game
 |   AI通过PPO来进行决策
 ├── game_hybrid.py: 
 |   AI使用混合策略(基于规则和PPO)
+|
 ├── test_ruleBased_ppo.py:
 |   基于规则的AI vs PPO AI
 ├── test_hybrid_ppo.py:
