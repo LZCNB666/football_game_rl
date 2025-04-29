@@ -15,6 +15,11 @@ football_game
 |   AI using PPO to make decisions
 ├── game_hybrid.py: 
 |   AI using a hybrid strategy (rule-based and PPO)
+|
+├── test_ruleBased_ppo.py:
+|   Rule-based AI vs PPO AI
+├── test_hybrid_ppo.py:
+|   Hybrid AI vs PPO AI
 ```
 
 #### Environment Settings
