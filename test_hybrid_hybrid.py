@@ -277,8 +277,8 @@ while running and matches_played < TARGET_MATCH_COUNT:
 
     # update game objects
     ball.update()
-    hybrid_agent.update(ball, player)
-    hybrid_enemy.update(ball, enemy)
+    hybrid_agent.update(ball, enemy)
+    hybrid_enemy.update(ball, player)
 
     # kicking detection
     player_kicked = player.kick(ball)
