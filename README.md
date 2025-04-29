@@ -1,6 +1,6 @@
 ### Python Football Game Based on Reinforcement Learning
 
-<div style="text-align: center;"><img src="./imgs/game.png" style="zoom: 50%;" /></div>
+<div style="text-align: center;"><img src="imgs/game.png" style="zoom: 50%;" /></div>
 
 ___
 #### Project Structure
@@ -84,7 +84,7 @@ Take `game_ppo.py` as example:
 python path/to/game_ppo.py
 ```
 
-<div style="text-align: center;"><img src="./imgs/12dvs8d.png" style="zoom: 75%;" /></div>
+<div style="text-align: center;"><img src="imgs/12dvs8d.png" style="zoom: 75%;" /></div>
 
 ___
 
