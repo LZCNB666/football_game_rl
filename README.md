@@ -1,7 +1,7 @@
 ### Python Football Game Based on Reinforcement Learning
 
 
-![game.png](https://github.com/LZCNB666/football_game_rl/blob/master/game.png)
+![game.png](https://github.com/LZCNB666/football_game_rl/blob/master/game.jpg)
 
 
 ___
@@ -78,7 +78,7 @@ python path/to/rf/train_ppo_8d.py
 tensorboard --logdir path/to/rf/ppo_football_logs2/tensorboard
 ```
 
-![training.png](https://github.com/LZCNB666/football_game_rl/blob/master/training.png)
+![training.png](https://github.com/LZCNB666/football_game_rl/blob/master/training.jpg)
 
 
 ___
