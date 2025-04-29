@@ -1,7 +1,6 @@
 ### Python Football Game Based on Reinforcement Learning
 
-
-
+!(game)[game.png]
 ___
 #### Project Structure
 ```text
@@ -76,7 +75,7 @@ python path/to/rf/train_ppo_8d.py
 tensorboard --logdir path/to/rf/ppo_football_logs2/tensorboard
 ```
 
-
+!(training)[training.png]
 
 ___
 
