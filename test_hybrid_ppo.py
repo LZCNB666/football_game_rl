@@ -260,7 +260,7 @@ while running and matches_played < TARGET_MATCH_COUNT:
     # 更新
     ball.update()
     ppo_agent.update(ball, enemy)
-    hybrid_enemy.update(ball, enemy)
+    hybrid_enemy.update(ball, player)
 
     # 踢球检测
     player_kicked = player.kick(ball)
