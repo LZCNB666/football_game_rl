@@ -24,6 +24,10 @@ football_game
 |   Rule-based AI vs PPO AI
 ├── test_hybrid_ppo.py:
 |   Hybrid AI vs PPO AI
+├── test_ppo_ppo.py:
+|   PPO-12d AI vs PPO-8d AI
+├── test_hybrid_hybrid.py:
+|   2 AIs with different hybrid strategy
 ```
 
 #### Environment Settings

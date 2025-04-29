@@ -24,6 +24,10 @@ football_game
 |   基于规则的AI vs PPO AI
 ├── test_hybrid_ppo.py:
 |   混合型AI vs PPO AI
+├── test_ppo_ppo.py:
+|   12维观测空间PPO AI vs 8维观测空间PPO AI
+├── test_hybrid_hybrid.py:
+|   2个使用不同混合策略的AI对战
 ```
 
 #### 环境配置
