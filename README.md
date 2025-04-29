@@ -60,20 +60,20 @@ ___
 
 1. Train PPO with 12d observation space
 ```bash
-python path/to/train_ppo.py
+python path/to/rf/train_ppo.py
 ```
-- Training logs will be saved at `./football_game/ppo_football_logs/`, you can use tensorboard to do visualization.
+- Training logs will be saved at `path/to/rf/ppo_football_logs/`, you can use tensorboard to do visualization.
 ```bash
-tensorboard --logdir ppo_football_logs/tensorboard
+tensorboard --logdir path/to/rf/ppo_football_logs/tensorboard
 ```
 
 2. Train PPO with 8d observation space
 ```bash
-python path/to/train_ppo_8d.py
+python path/to/rf/train_ppo_8d.py
 ```
-- Training logs will be saved at `./football_game/ppo_football_logs2/`, you can use tensorboard to do visualization.
+- Training logs will be saved at `path/to/rf/ppo_football_logs2/`, you can use tensorboard to do visualization.
 ```bash
-tensorboard --logdir ppo_football_logs2/tensorboard
+tensorboard --logdir path/to/rf/ppo_football_logs2/tensorboard
 ```
 
 
@@ -85,7 +85,7 @@ ___
 
 Take `game_ppo.py` as example:
 ```bash
-python path/to/game_ppo.py
+python path/to/game/game_ppo.py
 ```
 ___
 
@@ -95,6 +95,6 @@ ___
 Take `test_ruleBesed_ppo.py` as example:
 > **DO NOT** close the game window during the test!
 ```bash
-python path/to/test_ruleBesed_ppo.py
+python path/to/test/test_ruleBesed_ppo.py
 ```
 
