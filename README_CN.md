@@ -1,4 +1,7 @@
 ### 基于强化学习的Python足球游戏
+
+<div style="text-align: center;"><img src="images/game.png" style="zoom: 50%;" /></div>
+
 ___
 #### 项目结构
 ```text
@@ -51,8 +54,46 @@ pip install torch==2.5.0 torchvision==2.5.0
 pip install stable-baselines3[extra]
 ```
 
+___
+
 #### 训练
 
-#### 运行游戏
+1. 训练12维观测空间的PPO
+```bash
+python path/to/train_ppo.py
+```
+- 训练日志将保存在 `./football_game/ppo_football_logs/`, 使用tensorboard可以进行可视化
+```bash
+tensorboard --logdir ppo_football_logs/tensorboard
+```
 
-#### 参考
+2. 训练12维观测空间的PPO
+```bash
+python path/to/train_ppo_8d.py
+```
+- 训练日志将保存在 `./football_game/ppo_football_logs2/`, 使用tensorboard可以进行可视化
+```bash
+tensorboard --logdir ppo_football_logs2/tensorboard
+```
+___
+#### 运行游戏
+> 在运行游戏`game_ppo.py` and `game_hybrid.py`之前，请先运行**训练**章节的***训练12维观测空间的PPO***!
+
+以`game_ppo.py`为例:
+```bash
+python path/to/game_ppo.py
+```
+
+<div style="text-align: center;"><img src="images/12dvs8d.png" style="zoom: 75%;" /></div>
+
+___
+
+#### 测试
+
+> 在进行测试之前，请先运行**训练**章节的***训练12维观测空间的PPO***和***训练8维观测空间的PPO***!
+
+以`test_ruleBesed_ppo.py`为例:
+> 测试过程中**请勿关闭**游戏窗口!
+```bash
+python path/to/test_ruleBesed_ppo.py
+```
