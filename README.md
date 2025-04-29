@@ -60,7 +60,7 @@ ___
 
 ___
 #### Run the Game
-> Please run **Train ppo with 12d observation space** in **Training** section before running game: `game_ppo.py` and `game_hybrid.py`! 
+> Please run ***Train ppo with 12d observation space*** in **Training** section before running game: `game_ppo.py` and `game_hybrid.py`! 
 
 Take `game_ppo.py` as example:
 ```bash
@@ -69,7 +69,7 @@ python path/to/game_ppo.py
 ___
 
 #### Test the Game
-> Please run **Train ppo with 12d observation space** and **Train ppo with 8d observation space** in **Training** section before doing test!
+> Please run ***Train ppo with 12d observation space*** and ***Train ppo with 8d observation space*** in **Training** section before doing test!
 
 Take `test_ruleBesed_ppo.py` as example:
 > **DO NOT** close the game window during the test!
