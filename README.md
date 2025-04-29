@@ -29,6 +29,7 @@ football_game
 ├── test_hybrid_hybrid.py:
 |   2 AIs with different hybrid strategy
 ```
+___
 
 #### Environment Settings
 1. Python >= 3.9 is required
@@ -50,9 +51,27 @@ pip install torch==2.5.0 torchvision==2.5.0
 ```bash
 pip install stable-baselines3[extra]
 ```
+___
 
 #### Training
+1. Train PPO with 12d observation space
 
+2. Train PPO with 8d observation space
+
+___
 #### Run the Game
+> Please run **Train ppo with 12d observation space** in **Training** section before running game: `game_ppo.py` and `game_hybrid.py`! 
 
-#### References
+Take `game_ppo.py` as example:
+```bash
+python path/to/game_ppo.py
+```
+___
+
+#### Test the Game
+> Please run **Train ppo with 12d observation space** and **Train ppo with 8d observation space** in **Training** section before doing test!
+
+Take `test_ruleBesed_ppo.py` as example:
+```bash
+python path/to/test_ruleBesed_ppo.py
+```
