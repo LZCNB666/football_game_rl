@@ -5,8 +5,9 @@ import math
 import numpy as np
 from stable_baselines3 import PPO
 
-# load PPO model
-model = PPO.load("./ppo_football_logs/best_model.zip")
+# load PPO models
+model1 = PPO.load("../rf/ppo_football_logs/best_model.zip")
+model2 = PPO.load("../rf/ppo_football_logs2/best_model.zip")
 
 # initialize pygame
 pygame.init()
@@ -31,6 +32,8 @@ WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
+
+USE_PPO_DISTANCE = 150
 
 # create screen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -126,7 +129,7 @@ class Ball:
             return "player"
         return None
 
-class PPOAgent:
+class PPOAgent12d:
     def __init__(self, player):
         self.player = player
 
@@ -148,7 +151,7 @@ class PPOAgent:
 
     def update(self, ball, enemy):
         state = self.get_state(ball, enemy)
-        action, _ = model.predict(state, deterministic=True)
+        action, _ = model1.predict(state, deterministic=True)
         dx, dy = 0, 0
         if action == 0:
             dy = -1
@@ -167,16 +170,41 @@ class PPOAgent:
 
         self.player.move(dx, dy)
 
-class RuleBasedEnemy:
+class PPOAgent8d:
     def __init__(self, player):
         self.player = player
 
-    def update(self, ball):
-        dx = ball.x - self.player.rect.centerx
-        dy = ball.y - self.player.rect.centery
-        dist = max(1.0, math.sqrt(dx * dx + dy * dy))
-        dx /= dist
-        dy /= dist
+    def get_state(self, ball, enemy):
+        return np.array([
+            self.player.rect.centerx / WIDTH,
+            self.player.rect.centery / HEIGHT,
+            enemy.rect.centerx / WIDTH,
+            enemy.rect.centery / HEIGHT,
+            ball.x / WIDTH,
+            ball.y / HEIGHT,
+            ball.vx / MAX_BALL_SPEED,
+            ball.vy / MAX_BALL_SPEED,
+            ], dtype=np.float32)
+
+    def update(self, ball, enemy):
+        state = self.get_state(ball, enemy)
+        action, _ = model2.predict(state, deterministic=True)
+        dx, dy = 0, 0
+        if action == 0:
+            dy = -1
+        elif action == 1:
+            dy = 1
+        elif action == 2:
+            dx = -1
+        elif action == 3:
+            dx = 1
+        elif action == 4:
+            dx = (ball.x - self.player.rect.centerx)
+            dy = (ball.y - self.player.rect.centery)
+            dist = max(1.0, math.sqrt(dx * dx + dy * dy))
+            dx /= dist
+            dy /= dist
+
         self.player.move(dx, dy)
 
 
@@ -185,8 +213,8 @@ player = Player(WIDTH // 4, HEIGHT // 2, BLUE, PLAYER_SPEED)
 enemy = Player(3 * WIDTH // 4, HEIGHT // 2, RED, ENEMY_SPEED)
 ball = Ball()
 
-ppo_agent = PPOAgent(player)
-rule_based_enemy = RuleBasedEnemy(enemy)
+ppo12d_agent = PPOAgent12d(player)
+ppo8d_enemy = PPOAgent8d(enemy)
 
 # score related variables
 player_score = 0
@@ -195,14 +223,14 @@ matches_played = 0
 
 # statistics related variables
 ppo_hold_time = 0
-rule_based_hold_time = 0
+hybrid_hold_time = 0
 ppo_attack_count = 0
-rule_based_attack_count = 0
+hybrid_attack_count = 0
 ppo_defense_count = 0
-rule_based_defense_count = 0
+hybrid_defense_count = 0
 
 # who holds th ball
-ball_holder = None  # "ppo" / "rule"
+ball_holder = None  # "ppo12d" / "ppo8d"
 
 font = pygame.font.Font(None, 36)
 
@@ -213,8 +241,8 @@ while running and matches_played < TARGET_MATCH_COUNT:
 
     # update game objects
     ball.update()
-    ppo_agent.update(ball, enemy)
-    rule_based_enemy.update(ball)
+    ppo12d_agent.update(ball, enemy)
+    ppo8d_enemy.update(ball, player)
 
     # kicking detection
     player_kicked = player.kick(ball)
@@ -222,23 +250,23 @@ while running and matches_played < TARGET_MATCH_COUNT:
 
     # identify who holds the ball
     if player_kicked:
-        ball_holder = "ppo"
+        ball_holder = "ppo12d"
         if abs(ball.x - WIDTH // 2) < 100:  # kicking when distance to center line < 100px, considered as attacking behavior
             ppo_attack_count += 1
         if ball.x < WIDTH - 100:  # kicking when distance to own goal < 100px, considered as defending behavior
             ppo_defense_count += 1
     elif enemy_kicked:
-        ball_holder = "rule"
+        ball_holder = "ppo8d"
         if abs(ball.x - WIDTH // 2) < 100:
-            rule_based_attack_count += 1
+            hybrid_attack_count += 1
         if ball.x > WIDTH - 100:
-            rule_based_defense_count += 1
+            hybrid_defense_count += 1
 
     # calculate ball hold time
-    if ball_holder == "ppo":
+    if ball_holder == "ppo12d":
         ppo_hold_time += 1
-    elif ball_holder == "rule":
-        rule_based_hold_time += 1
+    elif ball_holder == "ppo8d":
+        hybrid_hold_time += 1
 
     # check goal
     goal = ball.check_goals()
@@ -263,8 +291,8 @@ while running and matches_played < TARGET_MATCH_COUNT:
     enemy.draw()
     ball.draw()
 
-    player_text = font.render(f"PPO: {player_score}", True, WHITE)
-    enemy_text = font.render(f"Rule-Based: {enemy_score}", True, WHITE)
+    player_text = font.render(f"PPO12d: {player_score}", True, WHITE)
+    enemy_text = font.render(f"PPO8d: {enemy_score}", True, WHITE)
     match_text = font.render(f"Match {matches_played}/{TARGET_MATCH_COUNT}", True, WHITE)
 
     screen.blit(player_text, (20, 20))
@@ -273,17 +301,17 @@ while running and matches_played < TARGET_MATCH_COUNT:
 
     pygame.display.flip()
 
-# 打印最终结果
+# print final result
 print("========== Battle Result ==========")
-print(f"PPO Agent Wins: {player_score}")
-print(f"Rule-Based Enemy Wins: {enemy_score}")
+print(f"PPO12d Wins: {player_score}")
+print(f"PPO8d Wins: {enemy_score}")
 print("\n========== Statistics ==========")
-print(f"PPO Agent Hold Time (frames): {ppo_hold_time}")
-print(f"Rule-Based Enemy Hold Time (frames): {rule_based_hold_time}")
-print(f"PPO attack: {ppo_attack_count}")
-print(f"Rule-Based attack: {rule_based_attack_count}")
-print(f"PPO defense: {ppo_defense_count}")
-print(f"Rule-Based defense: {rule_based_defense_count}")
+print(f"PPO12d Hold Time (frames): {ppo_hold_time}")
+print(f"PPO8d Hold Time (frames): {hybrid_hold_time}")
+print(f"PPO12d attack: {ppo_attack_count}")
+print(f"PPO8d attack: {hybrid_attack_count}")
+print(f"PPO12d defense: {ppo_defense_count}")
+print(f"PPO8d defense: {hybrid_defense_count}")
 
 pygame.quit()
 sys.exit()
