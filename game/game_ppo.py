@@ -6,7 +6,7 @@ import numpy as np
 from stable_baselines3 import PPO
 
 # load the model
-model = PPO.load("./ppo_football_logs/best_model.zip")
+model = PPO.load("../rf/ppo_football_logs/best_model.zip")
 
 # initialize pygame
 pygame.init()
