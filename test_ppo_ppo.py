@@ -241,8 +241,8 @@ while running and matches_played < TARGET_MATCH_COUNT:
 
     # update game objects
     ball.update()
-    ppo12d_agent.update(ball, player)
-    ppo8d_enemy.update(ball, enemy)
+    ppo12d_agent.update(ball, enemy)
+    ppo8d_enemy.update(ball, player)
 
     # kicking detection
     player_kicked = player.kick(ball)
