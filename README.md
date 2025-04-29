@@ -72,6 +72,7 @@ ___
 > Please run **Train ppo with 12d observation space** and **Train ppo with 8d observation space** in **Training** section before doing test!
 
 Take `test_ruleBesed_ppo.py` as example:
+> **DO NOT** close the game window during the test!
 ```bash
 python path/to/test_ruleBesed_ppo.py
 ```
