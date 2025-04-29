@@ -102,15 +102,15 @@ class FootballEnv(gym.Env):
             self.player.rect.centerx / WIDTH,
             self.player.rect.centery / HEIGHT,
 
+            # enemy position (normalized to [0,1])
+            self.enemy.rect.centerx / WIDTH,
+            self.enemy.rect.centery / HEIGHT,
+
             # ball state
             self.ball.x / WIDTH,
             self.ball.y / HEIGHT,
             self.ball.vx / MAX_BALL_SPEED,
             self.ball.vy / MAX_BALL_SPEED,
-
-            # relative position of ball to players
-            (self.ball.x - self.player.rect.centerx) / WIDTH,
-            (self.ball.y - self.player.rect.centery) / HEIGHT,
             ], dtype=np.float32)
 
     def reset(self, seed=None, options=None):
