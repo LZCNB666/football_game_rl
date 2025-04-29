@@ -1,36 +1,36 @@
 ### Python Football Game Based on Reinforcement Learning
 
-<div style="text-align: center;"><img src="imgs/game.png" style="zoom: 50%;" /></div>
+
 
 ___
 #### Project Structure
 ```text
 football_game
-|
-├── football_env_ppo.py:  
-|   training environment for PPO with gymnasium style with 12d observation space
-├── football_env_ppo_8d.py:  
-|   training environment for PPO with gymnasium style with 8d observation space
-├── train_ppo.py: 
-|   train PPO with 12d observation space using stable-baselines3 
-├── train_ppo_8d.py: 
-|   train PPO with 8d observation space using stable-baselines3 
-|
-├── game_rule_based.py: 
-|   AI is rule-based
-├── game_ppo.py: 
-|   AI using PPO to make decisions
-├── game_hybrid.py: 
-|   AI using a hybrid strategy (rule-based and PPO)
-|
-├── test_ruleBased_ppo.py:
-|   Rule-based AI vs PPO AI
-├── test_hybrid_ppo.py:
-|   Hybrid AI vs PPO AI
-├── test_ppo_ppo.py:
-|   PPO-12d AI vs PPO-8d AI
-├── test_hybrid_hybrid.py:
-|   2 AIs with different hybrid strategy
+├── rf 
+    ├── football_env_ppo.py:  
+        training environment for PPO with gymnasium style with 12d observation space
+    ├── football_env_ppo_8d.py:  
+        training environment for PPO with gymnasium style with 8d observation space
+    ├── train_ppo.py: 
+        train PPO with 12d observation space using stable-baselines3 
+    ├── train_ppo_8d.py: 
+        train PPO with 8d observation space using stable-baselines3
+├── game
+    ├── game_rule_based.py: 
+        AI is rule-based
+    ├── game_ppo.py: 
+        AI using PPO to make decisions
+    ├── game_hybrid.py: 
+        AI using a hybrid strategy (rule-based and PPO)
+├── test
+    ├── test_ruleBased_ppo.py:
+        Rule-based AI vs PPO AI
+    ├── test_hybrid_ppo.py:
+        Hybrid AI vs PPO AI
+    ├── test_ppo_ppo.py:
+        PPO-12d AI vs PPO-8d AI
+    ├── test_hybrid_hybrid.py:
+        2 AIs with different hybrid strategy
 ```
 ___
 
@@ -75,7 +75,11 @@ python path/to/train_ppo_8d.py
 ```bash
 tensorboard --logdir ppo_football_logs2/tensorboard
 ```
+
+
+
 ___
+
 #### Run the Game
 > Please run ***Train ppo with 12d observation space*** in **Training** section before running game: `game_ppo.py` and `game_hybrid.py`! 
 
@@ -83,9 +87,6 @@ Take `game_ppo.py` as example:
 ```bash
 python path/to/game_ppo.py
 ```
-
-<div style="text-align: center;"><img src="imgs/12dvs8d.png" style="zoom: 75%;" /></div>
-
 ___
 
 #### Test the Game
