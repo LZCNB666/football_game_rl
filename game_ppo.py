@@ -5,13 +5,13 @@ import math
 import numpy as np
 from stable_baselines3 import PPO
 
-# 加载模型
+# load the model
 model = PPO.load("./ppo_football_logs/best_model.zip")
 
-# 初始化pygame
+# initialize pygame
 pygame.init()
 
-# 游戏常量
+# global constants
 WIDTH, HEIGHT = 800, 600
 PLAYER_WIDTH, PLAYER_HEIGHT = 30, 50
 ENEMY_WIDTH, ENEMY_HEIGHT = 30, 50
@@ -24,22 +24,19 @@ KICK_FORCE = 5
 PLAYER_SPEED = 5
 ENEMY_SPEED = 3
 
-# 颜色
+# color
 GREEN = (0, 128, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 
-# 混合策略参数
-USE_PPO_DISTANCE = 150  # 小于这个距离用PPO，大于用规则
-
-# 创建游戏窗口
+# create screen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Football Game")
 clock = pygame.time.Clock()
 
-# 游戏对象
+# game objects
 class Player:
     def __init__(self, x, y, color):
         self.rect = pygame.Rect(x, y, PLAYER_WIDTH, PLAYER_HEIGHT)
@@ -47,22 +44,22 @@ class Player:
         self.speed = PLAYER_SPEED
 
     def move(self, dx, dy):
-        # 确保玩家不会移出边界
+        # make sure player doesn't move outside the screen
         new_rect = self.rect.move(dx * self.speed, dy * self.speed)
 
-        # 限制在本方半场内
-        if self.color == BLUE:  # 玩家在左半场
+        # limit player in its own half
+        if self.color == BLUE:  # player on left half
             if new_rect.left < 0:
                 new_rect.left = 0
             if new_rect.right > WIDTH // 2:
                 new_rect.right = WIDTH // 2
-        else:  # 敌人在右半场
+        else:  # enemy on right half
             if new_rect.left < WIDTH // 2:
                 new_rect.left = WIDTH // 2
             if new_rect.right > WIDTH:
                 new_rect.right = WIDTH
 
-        # 限制在上下边界内
+        # limit the upper and lower boundaries
         if new_rect.top < 0:
             new_rect.top = 0
         if new_rect.bottom > HEIGHT:
@@ -74,19 +71,19 @@ class Player:
         pygame.draw.rect(screen, self.color, self.rect)
 
     def kick(self, ball):
-        # 检查是否接触到球
+        # check if player touches ball
         if self.rect.colliderect(pygame.Rect(ball.x - BALL_RADIUS, ball.y - BALL_RADIUS,
                                              BALL_RADIUS * 2, BALL_RADIUS * 2)):
-            # 计算踢球方向
+            # calculate kicking direction
             dx = ball.x - self.rect.centerx
             dy = ball.y - self.rect.centery
             distance = max(1.0, math.sqrt(dx * dx + dy * dy))
 
-            # 标准化方向向量并应用踢球力量
+            # apply kick force
             ball.vx += (dx / distance) * KICK_FORCE
             ball.vy += (dy / distance) * KICK_FORCE
 
-            # 限制球速
+            # limit ball speed
             speed = math.sqrt(ball.vx ** 2 + ball.vy ** 2)
             if speed > MAX_BALL_SPEED:
                 ball.vx = (ball.vx / speed) * MAX_BALL_SPEED
@@ -97,43 +94,43 @@ class Ball:
         self.reset()
 
     def reset(self):
-        # 球在中间区域随机位置出现
+        # the ball appears at random in the middle area
         self.x = random.randint(WIDTH // 4, 3 * WIDTH // 4)
         self.y = random.randint(HEIGHT // 4, 3 * HEIGHT // 4)
 
-        # 随机初始速度
+        # random initial velocity
         angle = random.uniform(0, 2 * math.pi)
         speed = random.uniform(MIN_BALL_SPEED, MIN_BALL_SPEED + 2)
         self.vx = math.cos(angle) * speed
         self.vy = math.sin(angle) * speed
 
     def update(self):
-        # 更新位置
+        # update ball position
         self.x += self.vx
         self.y += self.vy
 
-        # 边界碰撞检测和反弹
+        # boundary collision detection and bounce
         if self.x - BALL_RADIUS < 0 or self.x + BALL_RADIUS > WIDTH:
-            self.vx = -self.vx * 0.8  # 反弹并减速
-            # 确保球不会卡在边界
+            self.vx = -self.vx * 0.8  # bounce and slow down
+            # make sure the ball doesn't get stuck on the boundary
             if self.x - BALL_RADIUS < 0:
                 self.x = BALL_RADIUS
             else:
                 self.x = WIDTH - BALL_RADIUS
 
         if self.y - BALL_RADIUS < 0 or self.y + BALL_RADIUS > HEIGHT:
-            self.vy = -self.vy * 0.8  # 反弹并减速
-            # 确保球不会卡在边界
+            self.vy = -self.vy * 0.8  # bounce and slow down
+            # make sure the ball doesn't get stuck on the boundary
             if self.y - BALL_RADIUS < 0:
                 self.y = BALL_RADIUS
             else:
                 self.y = HEIGHT - BALL_RADIUS
 
-        # 应用摩擦力
+        # friction
         self.vx *= FRICTION
         self.vy *= FRICTION
 
-        # 确保最小速度
+        # make sure the minimum speed
         speed = math.sqrt(self.vx ** 2 + self.vy ** 2)
         if 0 < speed < MIN_BALL_SPEED:
             self.vx = (self.vx / speed) * MIN_BALL_SPEED
@@ -143,10 +140,10 @@ class Ball:
         pygame.draw.circle(screen, WHITE, (int(self.x), int(self.y)), BALL_RADIUS)
 
     def check_goals(self):
-        # 检查左球门（玩家球门）
+        # check left goal (player's goal)
         if self.x - BALL_RADIUS < GOAL_WIDTH and HEIGHT // 2 - GOAL_HEIGHT // 2 < self.y < HEIGHT // 2 + GOAL_HEIGHT // 2:
             return "enemy"
-        # 检查右球门（敌人球门）
+        # check right goal (enemy's goal)
         if self.x + BALL_RADIUS > WIDTH - GOAL_WIDTH and HEIGHT // 2 - GOAL_HEIGHT // 2 < self.y < HEIGHT // 2 + GOAL_HEIGHT // 2:
             return "player"
         return None
@@ -158,21 +155,21 @@ class EnemyAI:
 
     def get_state(self, ball, player):
         return np.array([
-            # 玩家位置（归一化）
+            # player position
             player.rect.centerx / WIDTH,
             player.rect.centery / HEIGHT,
 
-            # 敌人位置
+            # enemy position
             enemy.rect.centerx / WIDTH,
             enemy.rect.centery / HEIGHT,
 
-            # 球的状态
+            # ball state
             ball.x / WIDTH,
             ball.y / HEIGHT,
             ball.vx / MAX_BALL_SPEED,
             ball.vy / MAX_BALL_SPEED,
 
-            # 相对位置
+            # relative position of ball to player and enemy
             (ball.x - enemy.rect.centerx) / WIDTH,
             (ball.y - enemy.rect.centery) / HEIGHT,
             (ball.x - player.rect.centerx) / WIDTH,
@@ -180,20 +177,20 @@ class EnemyAI:
             ], dtype=np.float32)
 
     def move_to_ball(self, ball):
-        # 向球移动
+        # move to ball
         dx = ball.x - self.enemy.rect.centerx
         dy = ball.y - self.enemy.rect.centery
-        # 标准化方向向量
+        # moving direction
         distance = max(1.0, math.sqrt(dx * dx + dy * dy))
         dx = dx / distance
         dy = dy / distance
-        # 移动敌人
+        # move
         self.enemy.move(dx, dy)
 
     def update(self, ball, player):
         state = self.get_state(ball, player)
         action, _ = self.model.predict(state, deterministic=True)
-        # 处理敌人动作
+        # enemy actions
         if action in [0, 1, 2, 3]:
             dx, dy = 0, 0
             if action == 0: dy = -1
@@ -204,31 +201,31 @@ class EnemyAI:
         elif action == 4:
             self.move_to_ball(ball)
 
-        # 随机改变方向（模拟撞墙行为）
-        if random.random() < 0.02:  # 2%的几率改变方向
+        # randomly change direction (simulate wall impact behavior)
+        if random.random() < 0.02:  # 2% chance to change direction
             self.enemy.move(random.uniform(-1, 1), random.uniform(-1, 1))
 
 
-# 创建游戏对象
+# create game objects
 player = Player(WIDTH // 4, HEIGHT // 2, BLUE)
 enemy = Player(3 * WIDTH // 4, HEIGHT // 2, RED)
 enemy_ai = EnemyAI(enemy)
 ball = Ball()
 
-# 计分
+# count scores
 player_score = 0
 enemy_score = 0
 font = pygame.font.Font(None, 36)
 
-# 游戏主循环
+# game main loop
 running = True
 while running:
-    # 处理事件
+    # get events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    # 玩家输入
+    # player keyboard input
     keys = pygame.key.get_pressed()
     dx, dy = 0, 0
     if keys[pygame.K_LEFT]:
@@ -241,15 +238,15 @@ while running:
         dy = 1
     player.move(dx, dy)
 
-    # 更新游戏状态
+    # update game objects
     ball.update()
     enemy_ai.update(ball, player)
 
-    # 踢球检测
+    # kicking detection
     player.kick(ball)
     enemy.kick(ball)
 
-    # 检查进球
+    # check goal
     goal = ball.check_goals()
     if goal:
         if goal == "player":
@@ -258,28 +255,28 @@ while running:
             enemy_score += 1
         ball.reset()
 
-    # 绘制游戏
+    # draw background
     screen.fill(GREEN)
 
-    # 绘制中线
+    # draw center line
     pygame.draw.line(screen, WHITE, (WIDTH // 2, 0), (WIDTH // 2, HEIGHT), 2)
 
-    # 绘制球门
+    # draw goal
     pygame.draw.rect(screen, WHITE, (0, HEIGHT // 2 - GOAL_HEIGHT // 2, GOAL_WIDTH, GOAL_HEIGHT))
     pygame.draw.rect(screen, WHITE, (WIDTH - GOAL_WIDTH, HEIGHT // 2 - GOAL_HEIGHT // 2, GOAL_WIDTH, GOAL_HEIGHT))
 
-    # 绘制游戏对象
+    # draw game objects
     player.draw()
     enemy.draw()
     ball.draw()
 
-    # 绘制分数
+    # draw scores
     player_text = font.render(f"YOU: {player_score}", True, BLUE)
     enemy_text = font.render(f"AI: {enemy_score}", True, RED)
     screen.blit(player_text, (20, 20))
     screen.blit(enemy_text, (WIDTH - 150, 20))
 
-    # 更新显示
+    # update game scene
     pygame.display.flip()
     clock.tick(60)
 
