@@ -1,7 +1,7 @@
 ### Python Football Game Based on Reinforcement Learning
 
 
-![image](https://github.com/LZCNB666/football_game_rl/blob/master/game.png>
+![image](https://github.com/LZCNB666/football_game_rl/blob/master/game.png)
 
 
 ___
