@@ -1,7 +1,7 @@
 ### Python Football Game Based on Reinforcement Learning
 
 <div align="center">
-  <img src="">
+  <img src="https://github.com/LZCNB666/football_game_rl/blob/master/game.png">
 </div>
 
 ___
@@ -79,7 +79,7 @@ tensorboard --logdir path/to/rf/ppo_football_logs2/tensorboard
 ```
 
 <div align="center">
-  <img src="">
+  <img src="https://github.com/LZCNB666/football_game_rl/blob/master/training.png">
 </div>
 
 ___
