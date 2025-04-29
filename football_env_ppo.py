@@ -5,7 +5,7 @@ import math
 import random
 import pygame
 
-# 全局常量
+# global constants
 WIDTH, HEIGHT = 800, 600
 PLAYER_WIDTH, PLAYER_HEIGHT = 30, 50
 ENEMY_WIDTH, ENEMY_HEIGHT = 30, 50
@@ -28,7 +28,7 @@ class Player:
         new_rect = self.rect.move(dx * (ENEMY_SPEED if self.is_enemy else PLAYER_SPEED),
                                   dy * (ENEMY_SPEED if self.is_enemy else PLAYER_SPEED))
 
-        # 移动边界限制
+        # player cannot go out of bounds, and cannot cross the center line
         if self.is_enemy:
             new_rect.left = max(WIDTH//2, new_rect.left)
             new_rect.right = min(WIDTH, new_rect.right)
@@ -57,7 +57,7 @@ class Ball:
         self.x += self.vx
         self.y += self.vy
 
-        # 边界碰撞
+        # ball speed decreases when colliding with bounds
         if self.x - BALL_RADIUS < 0 or self.x + BALL_RADIUS > WIDTH:
             self.vx *= -0.8
             self.x = np.clip(self.x, BALL_RADIUS, WIDTH-BALL_RADIUS)
@@ -65,11 +65,11 @@ class Ball:
             self.vy *= -0.8
             self.y = np.clip(self.y, BALL_RADIUS, HEIGHT-BALL_RADIUS)
 
-        # 摩擦处理
+        # friction
         self.vx *= FRICTION
         self.vy *= FRICTION
 
-        # 最小速度维持
+        # ensure the minimum ball speed
         speed = math.hypot(self.vx, self.vy)
         if 0 < speed < MIN_BALL_SPEED:
             self.vx = (self.vx/speed) * MIN_BALL_SPEED
@@ -82,37 +82,37 @@ class FootballEnv(gym.Env):
         self.MAX_STEP = max_steps
         self.current_step = 0
 
-        # 离散动作空间（上、下、左、右、踢球）
+        # discrete action space: 0: up, 1: down, 2: left, 3: right, 4: kick
         self.action_space = spaces.Discrete(5)
 
-        # 观察空间：12维归一化向量
+        # observation space: 12-dimensional vector
         self.observation_space = spaces.Box(
             low=-1.0, high=1.0, shape=(12,), dtype=np.float32
         )
 
-        # 初始化游戏对象
+        # initialize game objects
         self.player = Player(WIDTH//4, HEIGHT//2)
         self.enemy = Player(3 * WIDTH//4, HEIGHT//2, is_enemy=True)
         self.ball = Ball()
 
     def _get_obs(self):
-        # 精确的状态观测表示
+        # observation space
         return np.array([
-            # 玩家位置（归一化）
+            # player position (normalized to [0,1])
             self.player.rect.centerx / WIDTH,
             self.player.rect.centery / HEIGHT,
 
-            # 敌人位置
+            # enemy position (normalized to [0,1])
             self.enemy.rect.centerx / WIDTH,
             self.enemy.rect.centery / HEIGHT,
 
-            # 球的状态
+            # ball state
             self.ball.x / WIDTH,
             self.ball.y / HEIGHT,
             self.ball.vx / MAX_BALL_SPEED,
             self.ball.vy / MAX_BALL_SPEED,
 
-            # 相对位置
+            # relative position of ball to players and enemy
             (self.ball.x - self.enemy.rect.centerx) / WIDTH,
             (self.ball.y - self.enemy.rect.centery) / HEIGHT,
             (self.ball.x - self.player.rect.centerx) / WIDTH,
@@ -123,7 +123,7 @@ class FootballEnv(gym.Env):
         super().reset(seed=seed)
         self.current_step = 0
 
-        # 重置对象位置
+        # reset all game objects
         self.player.rect.center = (WIDTH//4, HEIGHT//2)
         self.enemy.rect.center = (3*WIDTH//4, HEIGHT//2)
         self.ball.reset()
@@ -133,7 +133,7 @@ class FootballEnv(gym.Env):
     def step(self, action):
         self.current_step += 1
 
-        # 处理敌人动作
+        # enemy actions
         if action in [0, 1, 2, 3]:
             dx, dy = 0, 0
             if action == 0: dy = -1
@@ -144,21 +144,21 @@ class FootballEnv(gym.Env):
         elif action == 4:
             self._enemy_kick()
 
-        # 玩家自动移动
+        # player simply chase the ball
         self._update_player()
 
-        # 更新球状态
+        # update ball
         self.ball.update()
 
-        # 检查进球
+        # check goal
         goal_result = self._check_goal()
 
-        # 计算奖励和终止条件
+        # calculate reward
         reward = self._calculate_reward(goal_result)
 
-        # 终止条件
+        # terminated or truncated
         terminated = goal_result is not None
-        truncated = self.current_step >= self.MAX_STEP
+        truncated = self.current_step >= self.MAX_STEP  # exceed max steps
 
         return self._get_obs(), reward, terminated, truncated, {}
 
@@ -174,14 +174,14 @@ class FootballEnv(gym.Env):
             self.ball.vx += (dx / dist) * KICK_FORCE
             self.ball.vy += (dy / dist) * KICK_FORCE
 
-            # 速度限制
+            # speeed limitation
             speed = math.hypot(self.ball.vx, self.ball.vy)
             if speed > MAX_BALL_SPEED:
                 self.ball.vx = (self.ball.vx / speed) * MAX_BALL_SPEED
                 self.ball.vy = (self.ball.vy / speed) * MAX_BALL_SPEED
 
     def _update_player(self):
-        # 玩家简易追球逻辑
+        # player simply chase the ball
         if random.random() < 0.1:
             dx, dy = random.choice([(1,0), (-1,0), (0,1), (0,-1)])
         else:
@@ -196,36 +196,36 @@ class FootballEnv(gym.Env):
             self.ball.y - self.enemy.rect.centery
         )
 
-        # 进攻奖励（球向左移动）
+        # attacking reward
         if self.ball.vx < 0:
             reward += 0.2 * abs(self.ball.vx / MAX_BALL_SPEED)
-        # 防守惩罚（球向右移动）
+        # defending punishment
         else:
             reward -= 0.15 * (self.ball.vx / MAX_BALL_SPEED)
 
-        # 与球的距离奖励（指数衰减）
+        # distance to ball reward (exponential decay)
         reward += 0.3 * math.exp(-enemy_to_ball / 200)
 
-        # 当球在左半场（攻击有利区域）
+        # when the ball is in the left half (attacking the favorable area)
         if self.ball.x < WIDTH/2:
             reward += 0.1 * (self.ball.x - WIDTH/2)/(WIDTH/2)
         else:
             reward -= 0.1 * (self.ball.x - WIDTH/2)/(WIDTH/2)
 
-        # 进球奖励
+        # goal reward
         if goal_result:
-            if goal_result == "player":  # 玩家得分
+            if goal_result == "player":  # player scored
                 reward -= 2.0
-            else:  # 敌人得分
+            else:  # enemy scored
                 reward += 3.0
 
         return reward
 
     def _check_goal(self):
-        # 检查左球门（玩家球门）
+        # check left goal (player's goal)
         if self.ball.x - BALL_RADIUS < GOAL_WIDTH and HEIGHT // 2 - GOAL_HEIGHT // 2 < self.ball.y < HEIGHT // 2 + GOAL_HEIGHT // 2:
             return "enemy"
-        # 检查右球门（敌人球门）
+        # check right goal (enemy's goal)
         if self.ball.x + BALL_RADIUS > WIDTH - GOAL_WIDTH and HEIGHT // 2 - GOAL_HEIGHT // 2 < self.ball.y < HEIGHT // 2 + GOAL_HEIGHT // 2:
             return "player"
         return None
