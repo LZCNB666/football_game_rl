@@ -66,7 +66,7 @@ python path/to/rf/train_ppo.py
 tensorboard --logdir path/to/rf/ppo_football_logs/tensorboard
 ```
 
-2. 训练12维观测空间的PPO
+2. 训练8维观测空间的PPO
 ```bash
 python path/to/rf/train_ppo_8d.py
 ```
