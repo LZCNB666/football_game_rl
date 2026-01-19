@@ -1,6 +1,9 @@
 ### Python Football Game Based on Reinforcement Learning
 
+<div align="center"><img src="game.jpg" width="50%" height="50%"></div>
+
 ___
+
 
 #### Project Structure
 ```text
