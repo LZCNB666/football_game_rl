@@ -77,6 +77,8 @@ python path/to/rf/train_ppo_8d.py
 ```bash
 tensorboard --logdir path/to/rf/ppo_football_logs2/tensorboard
 ```
+
+<div align="center"><img src="training.jpg" width="50%" height="50%"></div>
 ___
 
 #### Run the Game
