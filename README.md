@@ -52,7 +52,7 @@ pip install numpy matplotlib pygame gymnasium
 ```bash
 pip install torch==2.5.0 torchvision==2.5.0
 ```
-4. Install stable-baselines3
+4. Install [stable-baselines3](https://github.com/DLR-RM/stable-baselines3.git)
 ```bash
 pip install stable-baselines3[extra]
 ```
